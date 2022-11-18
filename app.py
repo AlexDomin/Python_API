@@ -1,5 +1,6 @@
 # app.py
 import sqlite3
+import json
 from flask import Flask, request, jsonify, make_response, abort, render_template
 from config import db, app
 from models import Widget, widget_schema, widgets_schema
@@ -28,9 +29,10 @@ def get_widget(id):
 @app.post("/widgets")
 def add_widget():
     print("c")
-    new_widget = Widget()
+    new_widget = request(input())
+    # new_widget = Widget()
+    # new_widget = widget_schema.load(widget, session=db.session)
     print(new_widget)
-    # new_widget = widget_schema.load(widgets, session=db.session)
     db.session.add(new_widget)
     db.session.commit()
     return widget_schema.dump(new_widget), 201
