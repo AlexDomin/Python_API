@@ -29,7 +29,8 @@ def get_widget(id):
 @app.post("/widgets")
 def add_widget():
     print("c")
-    new_widget = request(input())
+    new_widget = Widget()
+    new_widget.input()
     # new_widget = Widget()
     # new_widget = widget_schema.load(widget, session=db.session)
     print(new_widget)
