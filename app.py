@@ -29,8 +29,14 @@ def get_widget(id):
 @app.post("/widgets")
 def add_widget():
     print("c")
-    new_widget = Widget()
-    new_widget.input()
+    params = {
+        'name': request.values.get('name'),
+        'number_of_parts': request.values.get('number_of_parts'),
+        'created_at': request.values.get('created_at'),
+        'updated_at': request.values.get('updated_at')
+    }
+    new_widget = Widget(params)
+    # new_widget.input()
     # new_widget = Widget()
     # new_widget = widget_schema.load(widget, session=db.session)
     print(new_widget)
