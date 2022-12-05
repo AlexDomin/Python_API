@@ -1,0 +1,42 @@
+The application in it’s current state is not functional as intended.  The intention was to build a REST API with no UI (other than what is simply displayed in the browser as it it pulled or posted from/to the database when running the local server and entering curl commands in the terminal).  Currently, any data posted to or retrieved from the database must be done so by hard coding it to the various routes of the API, rather than using curl commands to hit them with JSON data, as was originally intended.  The print statements embedded in the route methods were added as a form of trouble shooting when I ran into my initial problem of not being able to connect the API to the SQLite DB.  I used them to see where the application was failing by printing letters corresponding to routes and the objects they attempted to create to the terminal.  Through that, it was determined that no connection was being made to the database as the letter “a” was printing but no corresponding object was being returned to the terminal when attempted to be passed to the GET request (app.py lines 13, 15, and 16).
+
+From looking at the return of the terminal as well as the console from the browser, it was determined that the initial issue of database connection was caused by the instantiation of the db and ma objects in the config.py file.  Those objects were not being utilized correctly in the app.py file.  This was partly due to the fact that I was attempting to create the db after the API was written to initially only communicate with a Python dictionary as a proof of concept.  This attempt was done by migrating the existing Python dictionary to a db instance through the following code:
+
+# importing JSON data to table
+import sqlite3
+conn = sqlite3.connect("widgets.db")
+widgets = [
+    "1, 'thing 1', '6', 'current_dateTime', 'current_dateTime'",
+    "2, 'thing 2', '7', 'current_dateTime', 'current_dateTime'",
+    "3, 'thing 3', '8', 'current_dateTime', 'current_dateTime'",
+]
+for widget_data in widgets:
+    insert_cmd = f"INSERT INTO widgets VALUES ({widget_data})"
+    conn.execute(insert_cmd)
+    conn.commit()
+
+I later learned that the db I had created needed to be destroyed and recreated with the db object in the app.py file upon running the application in order for it to properly connect.  
+
+The intended function of the application was was go to the terminal, enter “flask run” to start the local server, open a browser to display http://127.0.0.1:5000 from the running server, and utilize the following curl commands to interact with every route of the API (note: the JSON data in the curl commands is just a place holder and can be edited to include whatever the user chooses):
+
+curl -i http://127.0.0.1:5000/widgets \
+-X POST \
+-H 'Content-Type: application/json' \
+-d '{"name": "thing 4", "number_of_parts": 2}'
+
+
+curl -i http://127.0.0.1:5000/widgets \
+-X POST \
+-H 'Content-Type: application/json' \
+-d '{"name": "thing 4", "number_of_parts": 2, "created_at": current_dateTime, "updated_at": current_dateTime}'
+
+
+curl -i http://127.0.0.1:5000/widgets/1 \
+-X DELETE \
+-H 'Content-Type: application/json' \
+
+
+curl -i http://127.0.0.1:5000/widgets/1 \
+-X PUT \
+-H 'Content-Type: application/json' \
+-d '{"number_of_parts": 3}'
