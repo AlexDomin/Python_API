@@ -24,22 +24,17 @@ def get_widgets():
 @app.get("/widgets/<id>")
 def get_widget(id):
     print("b")
-    return jsonify(widgets[int(id)])
+    widget = db.session.get(Widget, id)
+    if widget == None:
+        return "not found", 404
+    return widget_schema.dump(widget)
 
 @app.post("/widgets")
 def add_widget():
     print("c")
-    params = {
-        'name': request.values.get('name'),
-        'number_of_parts': request.values.get('number_of_parts'),
-        'created_at': request.values.get('created_at'),
-        'updated_at': request.values.get('updated_at')
-    }
-    new_widget = Widget(params)
-    # new_widget.input()
-    # new_widget = Widget()
-    # new_widget = widget_schema.load(widget, session=db.session)
-    print(new_widget)
+    new_widget = Widget()
+    new_widget.name = request.json['name']
+    new_widget.number_of_parts = request.json['number_of_parts']
     db.session.add(new_widget)
     db.session.commit()
     return widget_schema.dump(new_widget), 201
